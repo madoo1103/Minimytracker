@@ -45,7 +45,6 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       padding: 40px;
-      required-border-radius: 16px;
       border-radius: 16px;
       width: 100%;
       max-width: 480px;
@@ -95,7 +94,6 @@
       outline: none;
     }
 
-    /* Custom arrow for modern selects */
     select {
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
       background-repeat: no-repeat;
@@ -131,8 +129,10 @@
       background: var(--accent-hover);
     }
 
-    button[type="submit"]:active {
-      transform: scale(0.98);
+    button[type="submit"]:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     #status {
@@ -141,7 +141,6 @@
       font-size: 14px;
       font-weight: 500;
       min-height: 20px;
-      transition: color 0.2s ease;
     }
   </style>
 </head>
@@ -200,7 +199,7 @@
       </select>
     </div>
 
-    <button type="submit">Submit Log</button>
+    <button type="submit" id="submitBtn">Submit Log</button>
   </form>
 
   <p id="status"></p>
@@ -209,7 +208,15 @@
 <!-- Firebase Modules -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getDatabase, ref, push } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+  import { 
+    getDatabase, 
+    ref, 
+    push, 
+    query, 
+    orderByChild, 
+    equalTo, 
+    get 
+  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyCsJhDKV9N9wN7hL1ieMUjI8h8SIgEYIfI",
@@ -243,39 +250,79 @@
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
-  document.getElementById('trackerForm').addEventListener('submit', function(e) {
+  document.getElementById('trackerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
     const staffName = document.getElementById('staffName').value;
     const staffPin = document.getElementById('staffPin').value;
     const deviceId = document.getElementById('deviceId').value;
     const action = document.getElementById('action').value;
 
-    // PIN Authentication Check
+    // 1. PIN Authentication Check
     if (staffPins[staffName] !== staffPin) {
       statusEl.style.color = 'var(--error)';
       statusEl.innerText = '✕ Incorrect PIN';
       return;
     }
 
-    // Push to Firebase with basic error handling
-    push(ref(database, 'logs'), {
-      staffName: staffName,
-      deviceId: deviceId,
-      action: action,
-      time: new Date().toLocaleString()
-    })
-    .then(() => {
+    // Disable button during network lookups to prevent double taps
+    submitBtn.disabled = true;
+    statusEl.style.color = 'var(--text-muted)';
+    statusEl.innerText = 'Verifying device status...';
+
+    try {
+      // 2. Fetch all logs for this specific device to check its state
+      const logsRef = ref(database, 'logs');
+      const deviceQuery = query(logsRef, orderByChild('deviceId'), equalTo(deviceId));
+      const snapshot = await get(deviceQuery);
+
+      let lastAction = null;
+
+      if (snapshot.exists()) {
+        const logs = snapshot.val();
+        
+        // Firebase queries aren't guaranteed to be strictly ordered in the returned JSON object object keys,
+        // so sorting the log entries by real historical time strings gets the actual last event.
+        const sortedLogs = Object.values(logs).sort((a, b) => new Date(a.time) - new Date(b.time));
+        lastAction = sortedLogs[sortedLogs.length - 1].action;
+      }
+
+      // 3. Validation Rules
+      if (action === 'Returned' && lastAction !== 'Checked Out') {
+        statusEl.style.color = 'var(--error)';
+        statusEl.innerText = `✕ Cannot return. ${deviceId} is not currently checked out.`;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      if (action === 'Checked Out' && lastAction === 'Checked Out') {
+        statusEl.style.color = 'var(--error)';
+        statusEl.innerText = `✕ ${deviceId} is already Checked Out. It must be returned first.`;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // 4. Everything is valid -> Log the new transaction
+      await push(ref(database, 'logs'), {
+        staffName: staffName,
+        deviceId: deviceId,
+        action: action,
+        time: new Date().toLocaleString()
+      });
+
       statusEl.style.color = 'var(--success)';
       statusEl.innerText = '✓ Successfully Submitted';
       document.getElementById('trackerForm').reset();
-    })
-    .catch((error) => {
+
+    } catch (error) {
       statusEl.style.color = 'var(--error)';
-      statusEl.innerText = '✕ Database Error. Try again.';
-      console.error("Firebase write failed: ", error);
-    });
+      statusEl.innerText = '✕ Connection error. Try again.';
+      console.error("Transaction Error: ", error);
+    } finally {
+      submitBtn.disabled = false;
+    }
   });
 </script>
 
