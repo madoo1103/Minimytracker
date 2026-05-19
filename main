@@ -1,44 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>MiniMy Tracker</title>
 
   <style>
-    body {
-      font-family: Arial;
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f4f4f4;
-    }
 
-    h1 {
-      text-align: center;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f5f9;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
     }
 
     .card {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 650px;
+      padding: 35px;
+      border-radius: 24px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+      margin-top: 30px;
     }
 
-    input, select, button {
+    h1 {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 35px;
+      color: #111;
+    }
+
+    label {
+      display: block;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #222;
+    }
+
+    input,
+    select {
       width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+      padding: 22px;
+      font-size: 24px;
+      border-radius: 18px;
+      border: 2px solid #d0d7de;
+      margin-bottom: 30px;
+      box-sizing: border-box;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #007AFF;
+      box-shadow: 0 0 0 4px rgba(0,122,255,0.15);
     }
 
     button {
+      width: 100%;
+      padding: 24px;
+      font-size: 28px;
+      font-weight: bold;
+      border: none;
+      border-radius: 20px;
       background: #007AFF;
       color: white;
-      border: none;
       cursor: pointer;
+      transition: 0.2s;
     }
 
     button:hover {
@@ -47,20 +79,50 @@
 
     #status {
       text-align: center;
+      font-size: 24px;
       font-weight: bold;
-      color: green;
+      margin-top: 25px;
     }
+
+    @media (max-width: 600px) {
+
+      .card {
+        padding: 24px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      label {
+        font-size: 20px;
+      }
+
+      input,
+      select {
+        font-size: 20px;
+        padding: 18px;
+      }
+
+      button {
+        font-size: 24px;
+        padding: 20px;
+      }
+    }
+
   </style>
 </head>
 
 <body>
 
   <div class="card">
+
     <h1>MiniMy Tracker</h1>
 
     <form id="trackerForm">
 
       <label>Staff Name</label>
+
       <select id="staffName" required>
         <option value="">Select Name</option>
         <option>Mahmoud</option>
@@ -81,7 +143,17 @@
         <option>Random</option>
       </select>
 
+      <label>PIN Number</label>
+
+      <input
+        type="password"
+        id="staffPin"
+        placeholder="Enter PIN"
+        required
+      >
+
       <label>MiniMy Device</label>
+
       <select id="deviceId" required>
         <option value="">Select Device</option>
         <option>MiniMy 1</option>
@@ -91,13 +163,16 @@
       </select>
 
       <label>Action</label>
+
       <select id="action" required>
         <option value="">Select Action</option>
         <option>Checked Out</option>
         <option>Returned</option>
       </select>
 
-      <button type="submit">Submit</button>
+      <button type="submit">
+        Submit
+      </button>
 
     </form>
 
@@ -105,49 +180,115 @@
 
   </div>
 
-  <!-- Firebase -->
-
   <script type="module">
 
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { initializeApp }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 
     import {
       getDatabase,
       ref,
       push
-    } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+    }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
 
     const firebaseConfig = {
+
       apiKey: "AIzaSyCsJhDKV9N9wN7hL1ieMUjI8h8SIgEYIfI",
+
       authDomain: "minimy-52b92.firebaseapp.com",
-      databaseURL: "https://minimy-52b92-default-rtdb.firebaseio.com",
+
+      databaseURL:
+      "https://minimy-52b92-default-rtdb.firebaseio.com",
+
       projectId: "minimy-52b92",
+
       storageBucket: "minimy-52b92.appspot.com",
+
       messagingSenderId: "1008825830443",
-      appId: "1:1008825830443:web:eb934d24ac6e2c98122e6e"
+
+      appId:
+      "1:1008825830443:web:eb934d24ac6e2c98122e6e"
     };
 
+
+    const staffPins = {
+
+      "Mahmoud": "4821",
+      "Emily": "1934",
+      "Kevin AAA cleaner": "6666",
+      "Kumar": "8642",
+      "Jian": "7419",
+      "AVA": "2356",
+      "Amir": "9184",
+      "Urvashi": "6631",
+      "Noah": "5027",
+      "Mohie": "7744",
+      "Lara": "1208",
+      "Katrina": "8841",
+      "Ting": "3395",
+      "Arjun": "4520",
+      "Sophia": "6712",
+      "Random": "9999"
+
+    };
+
+
     const app = initializeApp(firebaseConfig);
+
     const database = getDatabase(app);
 
-    document.getElementById('trackerForm').addEventListener('submit', function(e) {
+
+    document
+      .getElementById('trackerForm')
+
+      .addEventListener('submit', function(e) {
 
       e.preventDefault();
 
-      const staffName = document.getElementById('staffName').value;
-      const deviceId = document.getElementById('deviceId').value;
-      const action = document.getElementById('action').value;
+      const staffName =
+      document.getElementById('staffName').value;
+
+      const staffPin =
+      document.getElementById('staffPin').value;
+
+      const deviceId =
+      document.getElementById('deviceId').value;
+
+      const action =
+      document.getElementById('action').value;
+
+
+      if (staffPins[staffName] !== staffPin) {
+
+        document.getElementById('status').style.color = 'red';
+
+        document.getElementById('status').innerText =
+        'Incorrect PIN';
+
+        return;
+      }
+
 
       push(ref(database, 'logs'), {
+
         staffName: staffName,
+
         deviceId: deviceId,
+
         action: action,
+
         time: new Date().toLocaleString()
+
       });
 
+
+      document.getElementById('status').style.color = 'green';
+
       document.getElementById('status').innerText =
-        'Successfully Submitted';
+      'Successfully Submitted';
+
 
       document.getElementById('trackerForm').reset();
 
@@ -156,4 +297,5 @@
   </script>
 
 </body>
+
 </html>
