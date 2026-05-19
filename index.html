@@ -1,3 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniMy Device Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --error: #ef4444;
+      --input-bg: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      appearance: none;
+      outline: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    input::placeholder {
+      color: #475569;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      margin-top: 12px;
+    }
+
+    button[type="submit"]:hover {
+      background: var(--accent-hover);
+    }
+
+    button[type="submit"]:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Device Tracker</h2>
+  <p class="subtitle">Log your MiniMy check-ins and check-outs</p>
+
+  <form id="trackerForm">
+    <div class="form-group">
+      <label for="staffName">Staff Name</label>
+      <select id="staffName" required>
+        <option value="">Select Name</option>
+        <option>Mahmoud</option>
+        <option>Emily</option>
+        <option>Kevin AAA cleaner</option>
+        <option>Kumar</option>
+        <option>Jian</option>
+        <option>AVA</option>
+        <option>Amir</option>
+        <option>Urvashi</option>
+        <option>Noah</option>
+        <option>Mohie</option>
+        <option>Lara</option>
+        <option>Katrina</option>
+        <option>Ting</option>
+        <option>Arjun</option>
+        <option>Sophia</option>
+        <option>Random</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="staffPin">PIN Number</label>
+      <input type="password" id="staffPin" placeholder="Enter PIN" inputmode="numeric" pattern="[0-9]*" required>
+    </div>
+
+    <div class="form-group">
+      <label for="deviceId">MiniMy Device</label>
+      <select id="deviceId" required>
+        <option value="">Select Device</option>
+        <option>MiniMy 1</option>
+        <option>MiniMy 2</option>
+        <option>MiniMy 3</option>
+        <option>MiniMy 4</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="action">Action</label>
+      <select id="action" required>
+        <option value="">Select Action</option>
+        <option>Checked Out</option>
+        <option>Returned</option>
+      </select>
+    </div>
+
+    <button type="submit" id="submitBtn">Submit Log</button>
+  </form>
+
+  <p id="status"></p>
+</div>
+
 <!-- Firebase Modules -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -63,7 +270,7 @@
     statusEl.innerText = 'Verifying device status...';
 
     try {
-      // 2. Fetch all logs and filter in browser
+      // 2. Fetch all logs and filter in browser (Prevents the index requirement connection issue)
       const logsRef = ref(database, 'logs');
       const snapshot = await get(logsRef);
 
@@ -73,7 +280,7 @@
       if (snapshot.exists()) {
         const allLogs = snapshot.val();
         
-        // Filter out logs only matching this device ID, then sort chronologically
+        // Filter logs matching current device, then sort chronologically
         const deviceLogs = Object.values(allLogs)
           .filter(log => log.deviceId === deviceId)
           .sort((a, b) => new Date(a.time) - new Date(b.time));
@@ -85,7 +292,7 @@
         }
       }
 
-      // 3. Validation Rules with Named Attribution
+      // 3. Conditional State Validation Rules
       if (action === 'Returned' && lastAction !== 'Checked Out') {
         statusEl.style.color = 'var(--error)';
         statusEl.innerText = `✕ Cannot return. ${deviceId} is not currently checked out.`;
@@ -95,13 +302,12 @@
 
       if (action === 'Checked Out' && lastAction === 'Checked Out') {
         statusEl.style.color = 'var(--error)';
-        // Shows exactly who has the device currently
         statusEl.innerText = `✕ ${deviceId} is already Checked Out by ${lastUser || 'someone'}.`;
         submitBtn.disabled = false;
         return;
       }
 
-      // 4. Everything is valid -> Log the new transaction
+      // 4. Record dynamic transaction log entry
       await push(ref(database, 'logs'), {
         staffName: staffName,
         deviceId: deviceId,
@@ -122,3 +328,6 @@
     }
   });
 </script>
+
+</body>
+</html>
